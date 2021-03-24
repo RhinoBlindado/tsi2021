@@ -3,18 +3,22 @@
  * Autor: Valentino Lugli; Marzo - 2021
  **/
 
-// Package Info
+// Package Info 
+
 package TSI;
 
-// LIBRARIES
-//	StateObservation
-import core.game.StateObservation;
-//	ACTIONS
-import ontology.Types;
-//	ElapsedCpuTimer
-import tools.ElapsedCpuTimer;
+import java.util.ArrayList;
+import java.util.Collections;
 
-public class Agent
+import core.game.Observation;
+import core.game.StateObservation;
+import core.player.AbstractPlayer;
+import ontology.Types;
+import ontology.Types.ACTIONS;
+import tools.ElapsedCpuTimer;
+import tools.Vector2d;
+
+public class Agent extends AbstractPlayer
 {
 	public Agent(StateObservation stateObs, ElapsedCpuTimer elapsedTimer)
 	{
