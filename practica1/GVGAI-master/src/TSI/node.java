@@ -1,3 +1,19 @@
+/*
+ * [CASTELLANO]
+ * Practica 1: Agente Deliberativo y Reactivo
+ * Asignatura: Tecnicas de Sistemas Inteligentes
+ * Autor: Valentino Lugli (Github: @RhinoBlindado)
+ * Fecha: Marzo, Abril 2021
+ */
+
+/*
+ * [ENGLISH]
+ * Practice 1: Deliberative and Reactive Agent
+ * Course: Intelligent Systems Techniques
+ * Author: Valentino Lugli (Github: @RhinoBlindado)
+ * Date: March, April 2021
+ */
+
 package TSI;
 
 import tools.Vector2d;
@@ -12,7 +28,6 @@ public class node implements Comparable<node>{
 	private double accumCost;
 	private double expectedCost;
 	
-	private Vector2d portalPos;
 	private ArrayList<ACTIONS> routeSoFar = new ArrayList<ACTIONS>();
 	
 	
@@ -25,13 +40,13 @@ public class node implements Comparable<node>{
 		this.expectedCost = fowardCost;
 		this.totalCost = this.accumCost + this.expectedCost;
 	}
-	
-	public 
+	 
 	
 	@Override
 	public String toString()
 	{
-		return "node: "+"["+"Pos X: "+ this.nodePos.x+", Pox Y: "+ this.nodePos.y+", Orr X: "+ this.nodeOrientation.x+", Orr Y: "+ this.nodeOrientation.y+", f(n): "+ this.totalCost+" = g(n): "+ this.accumCost+" + h(n): "+ this.expectedCost+"]\n";
+		return "node: "+"["+"Pos["+ this.nodePos.x+"]["+ this.nodePos.y+"], Orr["+ this.nodeOrientation.x+"]["+ 
+				this.nodeOrientation.y+"] f(n)="+ this.totalCost+" = acc ["+ this.accumCost+"] + exp ["+ this.expectedCost+"]]";
 	}
 	
 	public Vector2d getPos()
@@ -44,34 +59,48 @@ public class node implements Comparable<node>{
 		return this.nodeOrientation;
 	}
 	
+	public ArrayList<ACTIONS> getActionList()
+	{
+		return this.routeSoFar;
+	}
 	
-	@Override
+	public double getAccumCost()
+	{
+		return this.accumCost;
+	}
+	
+	public void update(node arg0)
+	{
+		this.nodeOrientation = arg0.nodeOrientation;
+		this.accumCost = arg0.accumCost;
+		this.routeSoFar = new ArrayList<ACTIONS>(arg0.routeSoFar);
+		this.expectedCost = arg0.expectedCost;
+		this.totalCost = arg0.totalCost;
+	}
+	
 	public int compareTo(node arg0) 
 	{
 		int value = 0;
+		
+		if(this.totalCost > arg0.totalCost)
+			value = 1;
+		
+		if(this.totalCost < arg0.totalCost)
+			value = -1;
+		
 		if(this.totalCost == arg0.totalCost)
 		{
-			if(this.expectedCost > arg0.expectedCost)
-			{
-				value = -1;
-			}
-			else
+			if(this.accumCost > arg0.accumCost)
 			{
 				value = 1;
 			}
 			
-		}
-		else
-		{
-			if(this.totalCost > arg0.totalCost)
+			if(this.accumCost < arg0.accumCost)
 			{
-				value = -1;	
-			}
-			else 
-			{
-				value = 1;
+				value = -1;
 			}
 		}
+		
 		return value;
 	}
 }
