@@ -88,19 +88,6 @@ public class node implements Comparable<node>{
 		if(this.totalCost < arg0.totalCost)
 			value = -1;
 		
-		if(this.totalCost == arg0.totalCost)
-		{
-			if(this.accumCost > arg0.accumCost)
-			{
-				value = 1;
-			}
-			
-			if(this.accumCost < arg0.accumCost)
-			{
-				value = -1;
-			}
-		}
-		
 		return value;
 	}
 }

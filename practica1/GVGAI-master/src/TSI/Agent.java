@@ -43,7 +43,12 @@ public class Agent extends AbstractPlayer
 	ArrayList<Observation>[][] worldMap;
 	
 	ACTIONS actAction;
-
+	
+	boolean hasPortal = false, 
+			hasGems = false, 
+			hasEnemies = false;
+	
+	ArrayList<Double>[][] heatMap;
 	
 	public Agent(StateObservation stateObs, ElapsedCpuTimer elapsedTimer)
 	{
@@ -63,26 +68,67 @@ public class Agent extends AbstractPlayer
 		// Obtener una captura del mapa.
 		worldMap = stateObs.getObservationGrid();
 		
-		// Obtener la informacion de los portales.
+        // Informacion de los recursos del mapa
+		// 		Portales
         ArrayList<Observation>[] portalList = stateObs.getPortalsPositions(stateObs.getAvatarPosition());
-        portalPos = portalList[0].get(0).position;
-        portalPos.x = Math.floor(portalPos.x / gridScale.x);
-        portalPos.y = Math.floor(portalPos.y / gridScale.y);
+        
+        if(portalList != null)
+        {
+            portalPos = portalList[0].get(0).position;
+            portalPos.x = Math.floor(portalPos.x / gridScale.x);
+            portalPos.y = Math.floor(portalPos.y / gridScale.y);
+            hasPortal = true;
+        }
 
-		// Preparar los datos para el A*
-						
-		 road = aStar(playerPos, portalPos, stateObs, elapsedTimer);
-		
-        /* Deliberativo Complejo */
-		//ArrayList<Observation>[] gemList = stateObs.getResourcesPositions(stateObs.getAvatarPosition());
-		
-	/*	System.out.println(gemList.length);
-		
-		if(gemList[0].size() > 0)
+        //		Gemas
+		if(stateObs.getResourcesPositions(stateObs.getAvatarPosition()) != null)
 		{
-			gemLocator(gemList, stateObs, elapsedTimer);
+			hasGems = true;
 		}
-		*/
+
+		//		Enemigos
+		ArrayList<Observation>[] enemyList = stateObs.getNPCPositions(stateObs.getAvatarPosition());
+		if(enemyList != null)
+		{
+			hasEnemies = true;
+		}
+		
+		// Comportamiento Deliberativo Sencillo
+		if(hasPortal && !hasGems)
+		{
+		//	road = aStar(playerPos, portalPos, stateObs, elapsedTimer);
+		}
+		
+		// Comportamiento Deliberativo Complejo	
+		if(hasPortal && hasGems)
+		{
+			gemLocator(stateObs, elapsedTimer);
+		}
+		
+		if(hasEnemies)
+		{
+			System.out.println(enemyList[0].get(0).position.toString());
+		}
+		
+		
+		System.out.println("WORLD SIZE IS: "+worldMap[0].length+" x "+worldMap.length);
+		for(int i=0; i<worldMap.length; i++)
+		{
+			for(int j=0; j<worldMap[0].length; j++)
+			{
+				if(worldMap[i][j].size() > 0)
+				{
+					System.out.print(worldMap[i][j].get(0).itype+" ");
+				}
+				else
+				{
+					System.out.print("- ");
+				}
+			}
+			System.out.print("\n");
+		}
+		
+
 	}
 	
 	/**
@@ -309,8 +355,9 @@ public class Agent extends AbstractPlayer
 	}
 	
 	
-	public void gemLocator(ArrayList<Observation>[] gemRawList, StateObservation stateObs, ElapsedCpuTimer elapsedTimer)
+	public void gemLocator(StateObservation stateObs, ElapsedCpuTimer elapsedTimer)
 	{
+		ArrayList<Observation>[] gemRawList = stateObs.getResourcesPositions(stateObs.getAvatarPosition());
 		ArrayList<Vector2d> gemAuxList = new ArrayList<Vector2d>();
 		
 		for(int i=0; i < gemRawList[0].size(); i++)
@@ -334,8 +381,113 @@ public class Agent extends AbstractPlayer
 		}
 		road.addAll( aStar(actGem, portalPos, stateObs, elapsedTimer));
 	
-	//	System.out.println(road.toString());
 	}
+	
+	
+	public double heat(Vector2d heatSrc, Vector2d position)
+	{
+		return Math.ceil(( 1 / ( (Math.pow( (position.x - heatSrc.x), 2) ) + (Math.pow((position.y - heatSrc.y), 2)) + 1 ) ) * 10);	
+	}
+	
+	
+	public Types.ACTIONS evasion(StateObservation stateObs)
+	{
+		ArrayList<ArrayList<Double>> heatMap = new ArrayList<>();
+		
+		for(int i=0; i<worldMap.length; i++)
+		{
+			heatMap.add(new ArrayList<>());
+			for(int j=0; j<worldMap[0].length; j++)
+			{
+				heatMap.get(i).add(0.0);
+				if(worldMap[i][j].size() != 0)
+				{
+					if(worldMap[i][j].get(0).itype == 0)
+					{
+						heatMap.get(i).set(j, 100.0);
+					}
+				}
+			}
+		}
+		
+
+		
+		ArrayList<Observation>[] enemy = stateObs.getNPCPositions();
+		ArrayList<Vector2d> enemyPos = new ArrayList<Vector2d>();
+		
+		for(int i=0; i < enemy[0].size(); i++)
+		{
+			enemyPos.add(new Vector2d(enemy[0].get(i).position.x / gridScale.x, enemy[0].get(i).position.y / gridScale.y));
+		}
+		
+		int actX;
+		int actY;
+		
+		for(int i=0; i < enemyPos.size(); i++)
+		{
+			actX = (int)enemyPos.get(i).x;
+			actY = (int)enemyPos.get(i).y;
+			
+		//	System.out.println("ENEMY IN "+ actX+" "+actY);
+			
+			for(int j=actX-4; j < actX+4; j++)
+			{
+				if(j >= 0 && j < worldMap.length)
+				{
+					for(int k=actY-4; k < actY+4; k++)
+					{
+						if(k >= 0 && k < worldMap[0].length) 
+						{
+							heatMap.get(j).set(k, heatMap.get(j).get(k) + heat(enemyPos.get(i), new Vector2d(j, k)));
+						}
+					}
+				}
+			}
+			
+		}
+		
+		for(int i=0; i<worldMap.length; i++)
+		{
+			for(int j=0; j<worldMap[0].length; j++)
+			{
+				System.out.print(heatMap.get(i).get(j)+"\t");
+			}
+			System.out.print("\n");
+		}
+		
+		System.out.print("\n--------\n");
+	
+		double actDanger = heatMap.get((int)playerPos.x).get((int)playerPos.y);
+		ACTIONS react = ACTIONS.ACTION_NIL;
+		
+		System.out.println("ACT DANGER: "+actDanger);
+		if(actDanger > 3)
+		{
+			if(heatMap.get(((int)playerPos.x)).get((int)playerPos.y) < actDanger)
+			{
+				react = ACTIONS.ACTION_UP;
+			}
+			
+			if(heatMap.get(((int)playerPos.x)-1).get((int)playerPos.y) < actDanger)
+			{
+				react = ACTIONS.ACTION_DOWN;
+			}
+			
+			if(heatMap.get(((int)playerPos.x)).get((int)playerPos.y+1) < actDanger)
+			{
+				react = ACTIONS.ACTION_LEFT;
+
+			}
+			
+			if(heatMap.get(((int)playerPos.x)+1).get((int)playerPos.y-1) < actDanger)
+			{
+				react = ACTIONS.ACTION_RIGHT;
+			}
+		}
+		
+		return react;	
+	}
+	
 	
 	public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer)
 	{
@@ -348,8 +500,11 @@ public class Agent extends AbstractPlayer
 		{
 			actAction = ACTIONS.ACTION_NIL;
 		}
-	//	System.out.println("ACT ACTION:"+ actAction+" | ORIENTATION "+stateObs.getAvatarOrientation());
-	//	System.out.println("REAL POS: "+(stateObs.getAvatarPosition().x / gridScale.x)+" "+stateObs.getAvatarPosition().y / gridScale.y);
+		
+		if(hasEnemies)
+		{
+			actAction = evasion(stateObs);
+		}
 		
 		return actAction;	
 	}
