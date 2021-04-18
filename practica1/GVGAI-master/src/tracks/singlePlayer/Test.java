@@ -26,8 +26,7 @@ public class Test {
 		String sampleOLETSController = "tracks.singlePlayer.advanced.olets.Agent";
 		
 		// PRACTICE 1 CONTROLLER
-		String controlador = "TSI.Agent";
-		String testController = "TSI.camel";
+		String controlador = "src_lugli__valentino.Agent";
 			
 		//Load available games
 		String spGamesCollection =  "examples/all_games_sp.csv";
@@ -39,13 +38,13 @@ public class Test {
 
 		// Game and level to play
 		int gameIdx = 11;
-		int levelIdx = 5; // level names from 0 to 4 (game_lvlN.txt).
+		int levelIdx = 9; // level names from 0 to 4 (game_lvlN.txt).
 		String gameName = games[gameIdx][1];
 		String game = games[gameIdx][0];
 		String level1 = game.replace(gameName, gameName + "_lvl" + levelIdx);
 
-		String recordActionsFile = null;// "actions_" + games[gameIdx] + "_lvl"
-						// + levelIdx + "_" + seed + ".txt";
+		String recordActionsFile =  null; //"actions_" + games[gameIdx] + "_lvl"
+						//+ levelIdx + "_" + seed + ".txt";
 						// where to record the actions
 						// executed. null if not to save.
 
@@ -53,7 +52,15 @@ public class Test {
 		//ArcadeMachine.playOneGame(game, level1, recordActionsFile, seed);
 
 		// 2. This plays a game in a level by the controller.
-		ArcadeMachine.runOneGame(game, level1, visuals, controlador, recordActionsFile, seed, 0);
+		
+		for(int i=0; i<1; i++)
+		{
+			seed = new Random().nextInt();
+			System.out.print("["+(i+1)+"]");
+			ArcadeMachine.runOneGame(game, level1, visuals, controlador, recordActionsFile, seed, 0);
+		}
+		
+		//ArcadeMachine.runOneGame(game, level1, visuals, controlador, recordActionsFile, seed, 0);
 		
 
 		// 3. This replays a game from an action file previously recorded
