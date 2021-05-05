@@ -18,17 +18,20 @@
  * [EJERCICIO 3] - Colorear Sudamérica
  */
 
-/* -Se crea un vector de los paises, cada país corresponde con su número en ordenación alfabética.
- *  Es decir, Argentina = 1, Bolivia = 2, ..., Venezuela = 13.
- * -Para asignarle un color se indica que cada item del vector solo puede tener valores enteros entre 1 y 5 para el coste de la pintura.
- * -Se crea la variable paintCost para minimizar en ella el coste.
+/* - Se crea un vector de los países, cada país corresponde con su número en ordenación alfabética.
+ *  Es decir: Argentina = 1, Bolivia = 2, ..., Venezuela = 13.
+ *
+ * - Para asignarle un color se indica que cada ítem del vector solo puede tener valores enteros entre 1 y 5 para el coste de la pintura.
+ *
+ * - Se crea la variable paintCost para minimizar en ella el coste.
  */
 array[1..13] of var 1..5: country;
 var int : paintCost;
 
-/* -Se restringe el color que puede tener cada país acorde con lo indicado en sus fronteras.
- * -Las restricciones son conmutativas, por lo que no se tiene que colocar cada país si ya todos los paises con los que
- *  tiene frontera están ya restringidos.
+/* - Se restringe el color que puede tener cada país sea distinto con los paises con los que tiene fronteras.
+ *
+ * - Las restricciones son conmutativas, por lo que no se tiene que colocar cada país si ya todos los paises con los que
+ *   tiene frontera han sido ya escritos.
  */
 
 % Argentina
@@ -37,6 +40,7 @@ constraint country[1] != country[2] /\
            country[1] != country[4] /\
            country[1] != country[9] /\
            country[1] != country[12];
+
 % Bolivia
 constraint country[2] != country[3] /\
            country[2] != country[4] /\
@@ -82,7 +86,7 @@ constraint paintCost == sum(i in 1..13)(country[i]*100);
 % Se minimiza ese costo.
 solve minimize paintCost;
 
-% Para que la salida quede más legible, se declaran estos vectores de cadenas que tienen los nombres textuales de los colores y los paises.
+% Para que la salida quede más legible, se declaran estos vectores de cadenas que tienen los nombres textuales de los colores y los países.
 array[1..5] of string: colorName = ["Verde   ", "Naranja ", "Rojo    ", "Azul    ", "Amarillo"];
 array[1..13] of string: countryName = ["Argentina        ", "Bolivia          ", "Brazil           ", "Chile            ", "Colombia         ", "Ecuador          ", "Guayana Francesa ", "Guyana           ", "Paraguay         ", "Perú             ", "Surinam          ", "Uruguay          ", "Venezuela        "];
 
