@@ -19,7 +19,7 @@
  */
 
 /* - Se crea un vector de los países, cada país corresponde con su número en ordenación alfabética.
- *  Es decir: Argentina = 1, Bolivia = 2, ..., Venezuela = 13.
+ *   Es decir: Argentina = 1, Bolivia = 2, ..., Venezuela = 13.
  *
  * - Para asignarle un color se indica que cada ítem del vector solo puede tener valores enteros entre 1 y 5 para el coste de la pintura.
  *

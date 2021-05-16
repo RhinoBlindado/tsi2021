@@ -50,10 +50,10 @@ constraint numArr[4] + (carry[1]*10) == 2*numArr[0] + numArr[1] + carry[0];
 constraint numArr[2] + (carry[2]*10) == 2*numArr[5] + numArr[3] + carry[1];
 
 % E = E + E
-constraint numArr[0] + (carry[3]*10) = 2*numArr[0] + carry[2];
+constraint numArr[0] + (carry[3]*10) == 2*numArr[0] + carry[2];
 
 % W = S + S
-constraint numArr[6] + (carry[4]*10) = 2*numArr[3] + carry[3];
+constraint numArr[6] + (carry[4]*10) == 2*numArr[3] + carry[3];
 
 % T
 constraint numArr[4] == carry[4];

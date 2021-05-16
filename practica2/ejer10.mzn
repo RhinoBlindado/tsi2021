@@ -46,7 +46,7 @@ array[0..12] of var 0..1: itemSelection;
 /*
  * - itemWeight[i]*itemSelection[i] indica que este peso podrá o bien ser el peso del item si se mete en la mochila (1) o (0) si no se mete.
  * 
- * - Se realiza la suma de todos los items junto al valor de selección y esto se igual a actualWeight
+ * - Se realiza la suma de todos los items junto al valor de selección y esto se iguala a actualWeight
  *
  * - actualWeight se restringe para que sea menor o igual que el peso máximo establecido, maxWeight.
  *

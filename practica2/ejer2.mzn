@@ -18,8 +18,8 @@
  * [EJERCICIO 2] - Monedas mínimas
  */
 
-% Pedir por pantalla la cantidad de monedas en centimos.
-int: amountInCents;
+% Se tiene cantidad de monedas en céntimos por facilidad para realizar los cálculos y evitar comparaciones de flotantes.
+int: amountInCents = 799;
 
 % Construir in vector para llevar la cuenta de las monedas y otro para mantener los valores de las monedas en céntimos.
 array[1..8] of var int: coinCounter;
@@ -27,7 +27,6 @@ array[1..8] of int: coins = [1, 2, 5, 10, 20, 50, 100, 200];
 
 % Obtener las monedas contadas.
 var int : coinCount;
-
 
 % Evitar que existan valores menores a 1 en la entrada.
 constraint amountInCents > 0;
