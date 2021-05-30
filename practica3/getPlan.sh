@@ -4,15 +4,16 @@ if [ "$#" -ne 1 ]; then
     echo "getPlan - A quick ff wrapper"
     echo "----------------------------"
     echo "This program needs 1 parameter."
-    echo "Usage: ./getPlan <name>"
-    echo "<name>      Name of problem, the program loads the .ppdl files as required"
-    echo "            The problem and domains name must be <name>Dom.pddl and <name>Prob.pdll"
+    echo "Usage: ./getPlan <number>"
+    echo "<number>      The exercise number"
+    echo "              The problem and domains name must 'dominio<number>.pddl' and 'promblema<number>.pddl'"
     exit
 fi
 
-prefix=$1
-domain=$prefix"Dom.pddl"
-problem=$prefix"Prob.pddl"
+num=$1
+
+domain="ejer"$1"/dominio"$1".pddl"
+problem="ejer"$1"/problema"$1".pddl"
 
 
 if [ -f "$domain" -a -f "$problem" ]; then
