@@ -10,15 +10,15 @@
 ; Author: Valentino Lugli (Github: @RhinoBlindado)
 ; Date: May, June 2021
 
-; Ejercicio 2, Problema
+; Ejercicio 4, Problema
 
-(define (problem ej2p)
-    (:domain terran2)
+(define (problem ej4p)
+    (:domain terran4)
     (:objects
         ; Se instancias los objetos que se piden.
         LOC11 LOC12 LOC13 LOC14 LOC21 LOC22 LOC23 LOC24 LOC31 LOC32 LOC33 LOC34 - map
-        VCE1 VCE2 VCE3 - unit
-        centro-de-mando1 extractor1 - building
+        VCE1 VCE2 VCE3 marine1 marine2 segador1 - unit
+        centro-de-mando1 extractor1 barrancon1 - building
     )
     (:init
         ; Mapa
@@ -71,9 +71,34 @@
         ; - Indicando que las unidades son VCE.
         (unitType VCE1 VCE)
         (unitType VCE2 VCE)
-        ; - Localizando en el mapa las unidades.
+        (unitType VCE3 VCE)
+        ; - Indicando que para reclutar VCEs es necesario tener minerales.
+        (toHireNeeds VCE mineral)
+        ; - Indicando que los VCEs se reclutan en los Centros de Mando.
+        (hiredIn VCE centro-de-mando)
+        ; - Localizando en el mapa la unidad.
         (in VCE1 LOC11)
-        (in VCE2 LOC11)
+        ; - Indicando que VCE1 ya está reclutado.
+        (isHired VCE1)
+
+
+        ; Marines
+        ; - Indicando que las unidades son del tipo Marine.
+        (unitType marine1 marine)
+        (unitType marine2 marine)
+        ; - Indicando que para reclutar Marines se necesitan minerales.
+        (toHireNeeds marine mineral)
+        ; - Indicando que los Marines se reclutan en los Barrancones.
+        (hiredIn marine barrancon) 
+        
+        ; Segadores
+        ; - Indicando que las unidades son del tipo Segador.
+        (unitType segador1 segador)
+        ; - Indicando que para reclutar Segadores se necesitan gas y minerales.
+        (toHireNeeds segador mineral)
+        (toHireNeeds segador gas)
+        ; - Indicando que los Segadores se reclutan en los Barrancones.
+        (hiredIn segador barrancon)
 
         ; Centro de Mando
         ; - Indicando que el Centro de Mando es de tipo Centro de Mando.
@@ -87,13 +112,26 @@
         ; - Indicando que el Extractor es del tipo.
         (buildingType extractor1 extractor)
         ; - Indicando que el Extractor necesita de minerales.
-        (needs extractor1 mineral)
+        (toBuildNeeds extractor mineral)
 
+        ; Barrancones
+        ; - Indicando que los Barrancones son del tipo.
+        (buildingType barrancon1 barrancon)
+        ; - Indicando que los Barrancones necesitan varios minerales.
+        (toBuildNeeds barrancon mineral)
+        (toBuildNeeds barrancon gas)
     )
     (:goal
+        ; El objetivo es:
         (and
-            ; El objetivo es que VCE1 esté extrayendo un recurso de gas vespeno.
-            (isExtracting VCE1 gas)
+            ; - El objetivo es construir un Barrancón en LOC32.
+            (in barrancon1 LOC32)
+            ; - Disponer de un marine (Marine1) en la localización LOC31
+            (in marine1 LOC31)
+            ; - Disponer de otro marine (Marine2) en la localización LOC24
+            (in marine2 LOC24)
+            ; - Disponer de un segador (Segador1) en la localización LOC12
+            (in segador1 LOC12)
         )
     )
 )

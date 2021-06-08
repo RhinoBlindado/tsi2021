@@ -10,16 +10,16 @@
 ; Author: Valentino Lugli (Github: @RhinoBlindado)
 ; Date: May, June 2021
 
-; Ejercicio 3, Dominio
+; Ejercicio 4, Dominio
 
-(define (domain terran3)
+(define (domain terran4)
     (:requirements :adl)
     (:types
         localizable map resource - object
         unit building - localizable
     )
     (:constants
-        VCE - uType
+        VCE marine segador - uType
         centro-de-mando barrancon extractor - bType
         mineral gas - resource
     )
@@ -31,23 +31,41 @@
         (buildingType ?building - building ?type - bType)
 
         ; Predicados
-        ; - Indica que un objeto localizable está en un lugar del mapa.
+
+        ;   + Predicados del mapa
+        ;       - Indica que un objeto localizable está en un lugar del mapa.
         (in ?obj - localizable ?coord - map)
-        ; - Indica que dos puntos del mapa están conectados y se puede transitar por ellos.
+        ;       - Indica que dos puntos del mapa están conectados y se puede transitar por ellos.
         (connected ?x ?y - map)
-        ; - Indica que un edificio está construido.
-        (built ?building - building)
-        ; - Localización en el mapa de un nodo de recursos.
+
+        ;   + Predicados de Recursos
+        ;       - Localización en el mapa de un nodo de recursos.
         (resourceNode ?coord - map ?resource - resource)
-        ; - Indica que una unidad está extrayendo un recurso.
+        ;       - Indica que una unidad está extrayendo un recurso.
         (isExtracting ?unit - unit ?resource - resource)
-        ; - Indica que un recurso está siendo extraido.
+        ;       - Indica que un recurso está siendo extraido.
         (beingExtracted ?resource - resource)
-        ; - Indica que un VCE está en uso.
+
+
+        ;   + Predicados de Edificios
+        ;       - Indica que un edificio está construido.
+        (built ?building - building)
+        ;       - Indica que recurso necesita una clase de edificio para construirse.
+        (toBuildNeeds ?buildType - bType ?resource - resource)
+
+
+        ;   + Predicados de Unidades
+        ;       - Indica que una unidad está en uso.
         (unitInUse ?unit - unit)
-        ; - Indica que recurso necesita una clase de edificio para construirse.
-        (needs ?buildType - bType ?resource - resource)
+        ;       - Indica que recurso necesita una clase de unidad para reclutarse.
+        (toHireNeeds ?unitType - uType ?resource - resource)
+        ;       - Indica que una unidad ha sido ya reclutada.
+        (isHired ?unit - unit)
+        ;       - Indica que en un cierto edificio se recluta una unidad particular.
+        (hiredIn ?unitType - uType ?buildingType - bType)
     )
+
+
     (:action navegar
         ; Si la unidad está en un sitio del mapa y este sitio está conectado con los otros, puede moverse hacia ellos.
         :parameters (?unit - unit ?x ?y - map)
@@ -63,6 +81,7 @@
             (not (in ?unit ?x))
         )
     )
+
     (:action asignar
         ; Si una unidad VCE se encuentra en el sitio de un nodo de recursos, puede empezar a extraer dicho recurso.
         :parameters (?unit - unit ?resourceLocation - map ?resourceType - resource)
@@ -119,7 +138,9 @@
                     (in ?b ?x)
                 )
             )
-            
+            ; El edificio no ha sido construido
+            (not (built ?building))
+
             ; Se están extrayendo los recursos que necesita el edificio, es decir:
             ; Existe un tipo de edicio...
             (exists (?bt - bType)
@@ -129,7 +150,7 @@
                     ; ... y para todos los recursos...
                     (forall (?r - resource)
                         ; ... que necesita este tipo de edificio en particular ...
-                        (imply (needs ?bt ?r)
+                        (imply (toBuildNeeds ?bt ?r)
                             ; ... verificar que se están extrayendo.
                             (beingExtracted ?r)
                         )
@@ -144,5 +165,45 @@
             (in ?building ?x)
         )
     )
+
+    (:action reclutar
+        :parameters (?building - building ?unit - unit ?x - map)
+        :precondition 
+        (and 
+            ; Se está en un edificio.
+            (in ?building ?x)
+
+            ; Para la unidad de un cierto tipo...
+            (exists (?ut - uType) 
+                (and
+                    ; ... que es de la unidad que se desea...
+                    (unitType ?unit ?ut)
+                    ; ... y para todos los recursos ...
+                    (forall (?r - resource) 
+                        ; ... que necesita dicha unidad ...
+                        (imply (toHireNeeds ?ut ?r)
+                            ; ... ya se están extrayendo, ...
+                            (beingExtracted ?r)
+                        )
+                    )
+                    ; ... y el edificio actual ...
+                    (exists (?bt - bType) 
+                        (and
+                            ; ... es el edificio en el que se recluta ese tipo de unidad.
+                            (buildingType ?building ?bt)
+                            (hiredIn ?ut ?bt)
+                        )
+                    )           
+                )
+            )
+        )
+        :effect 
+        (and 
+            ; La unidad se recluta y aparece en la localización del edificio.
+            (in ?unit ?x)
+            (isHired ?unit)
+        )
+    )
+    
     
 )

@@ -1,12 +1,13 @@
 #!/bin/bash
 
 if [ "$#" -ne 1 ]; then
-    echo "getPlan - A quick ff wrapper"
+    echo "getPlan - Un wrapper sencillo de ff"
     echo "----------------------------"
-    echo "This program needs 1 parameter."
-    echo "Usage: ./getPlan <number>"
-    echo "<number>      The exercise number"
-    echo "              The problem and domains name must 'dominio<number>.pddl' and 'promblema<number>.pddl'"
+    echo "Este programa necesita de 1 parámetro."
+    echo "Uso: ./getPlan <n>"
+    echo "<n>   El nombre del ejercicio"
+    echo "      El archivo de dominio debe llamarse 'dominio<n>.pddl' y el de problema 'problema<n>.pddl'"
+    echo "      Estos archivos deben estar en un subdirectorio llamado ejer<n> relativo al directorio donde se llama getPlan"
     exit
 fi
 
@@ -23,11 +24,11 @@ if [ -f "$domain" -a -f "$problem" ]; then
 else
 
     if [ ! -f "$domain" ]; then
-        echo ">ERROR: File '$domain' does not exist."
+        echo ">ERROR: El archivo '$domain' no existe"
     fi
 
     if [ ! -f "$problem" ]; then
-        echo ">ERROR: File '$problem' does not exist."
+        echo ">ERROR: El archivo  '$problem' no existe."
     fi
 
 fi

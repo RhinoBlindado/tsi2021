@@ -10,15 +10,15 @@
 ; Author: Valentino Lugli (Github: @RhinoBlindado)
 ; Date: May, June 2021
 
-; Ejercicio 2, Problema
+; Ejercicio 3, Problema
 
 (define (problem ej3p)
     (:domain terran3)
     (:objects
         ; Se instancias los objetos que se piden.
         LOC11 LOC12 LOC13 LOC14 LOC21 LOC22 LOC23 LOC24 LOC31 LOC32 LOC33 LOC34 - map
-        VCE1 VCE2 - unit
-        centro-de-mando1 extractor1 - building
+        VCE1 VCE2 VCE3 - unit
+        centro-de-mando1 extractor1 barrancon1 - building
     )
     (:init
         ; Mapa
@@ -71,9 +71,11 @@
         ; - Indicando que las unidades son VCE.
         (unitType VCE1 VCE)
         (unitType VCE2 VCE)
+        (unitType VCE3 VCE)
         ; - Localizando en el mapa las unidades.
         (in VCE1 LOC11)
         (in VCE2 LOC11)
+        (in VCE3 LOC11)
 
         ; Centro de Mando
         ; - Indicando que el Centro de Mando es de tipo Centro de Mando.
@@ -87,13 +89,19 @@
         ; - Indicando que el Extractor es del tipo.
         (buildingType extractor1 extractor)
         ; - Indicando que el Extractor necesita de minerales.
-        (needs extractor1 mineral)
+        (needs extractor mineral)
 
+        ; Barrancones
+        ; - Indicando que los Barrancones son del tipo.
+        (buildingType barrancon1 barrancon)
+        ; - Indicando que los Barrancones necesitan varios minerales.
+        (needs barrancon mineral)
+        (needs barrancon gas)
     )
     (:goal
         (and
-            ; El objetivo es que VCE1 esté extrayendo un recurso de gas vespeno.
-            (isExtracting VCE1 gas)
+            ; El objetivo es construir un Barrancón en LOC32.
+            (in barrancon1 LOC32)
         )
     )
 )
