@@ -24,7 +24,7 @@
         mineral gas - resource
     )
     (:predicates
-        ; Atributos
+        ; Atributos: Dadas las restricciones de las acciones, se utilizan estos predicados como atributos de los objetos.
         ; - Tipo de unidad.
         (unitType ?unit - unit ?type - uType)
         ; - Tipo de edificio.
@@ -76,9 +76,24 @@
         (toBuildNeedsNum ?buildType - bType ?resource - resource)
         ;   - Cuantos recursos necesita una unidad para reclutarse.
         (toHireNeedsNum ?unitType - uType ?resource - resource)
+
+        ; + Funciones de Tiempo
+        ;   - Contador de unidades de tiempo o 'ticks'
+        (tick)
+        ;   - Tiempo que tarda en construirse un edificio.
+        (timeToBuild ?buildType - bType)
+        ;   - Tiempo que tarda en reclutarse una unidad.
+        (timeToHire ?unitType - uType)
+        ;   - Tiempo que tarda una unidad en moverse.
+        (timeToMove ?unitType - uType)
+        ;   - Tiempo que tarda en extraerse los recursos
+        (timeToExtract)
+        ;   - Longitud entre localizaciones.
+        (distance)
     )
     
     (:action navegar
+        ; Si la unidad está en un sitio del mapa y este sitio está conectado con los otros, puede moverse hacia ellos si no está en uso.
         :parameters (?unit - unit ?x ?y - map)
         :precondition 
         (and 
@@ -95,10 +110,24 @@
             ; Puede moverse a la porción con que se conecta.
             (in ?unit ?y)
             (not (in ?unit ?x))
+
+            ; Se aumenta el tiempo dependiendo del tipo de unidad que sea.
+            (when (unitType ?unit VCE) 
+                (increase (tick) (/ (distance) (timeToMove VCE)))
+            )
+
+            (when (unitType ?unit marine)
+                (increase (tick) (/ (distance) (timeToMove marine)))
+            )
+
+            (when (unitType ?unit segador)
+                (increase (tick) (/ (distance) (timeToMove segador)))
+            )   
         )
     )
 
     (:action asignar
+        ; Asigna una unidad VCE a un nodo de recurso y empieza a extraerlos.
         :parameters (?unit - unit ?resourceLocation - map ?resourceType - resource)
         :precondition 
         (and 
@@ -142,6 +171,7 @@
     )
 
     (:action construir
+        ; Construye un edificio en una localización del mapa.
         :parameters (?unit - unit ?building - building ?x - map)
         :precondition 
         (and 
@@ -186,21 +216,27 @@
             (built ?building)
             (in ?building ?x)
 
-            ; Se reducen los recursos que utiliza el recurso para construirse.
+            ; Se reducen los recursos que utiliza el recurso para construirse y se aumenta el tiempo que toman en construirse.
             (when (buildingType ?building barrancon) 
                 (and
                     (decrease (resourceCount mineral) (toBuildNeedsNum barrancon mineral))
                     (decrease (resourceCount gas) (toBuildNeedsNum barrancon gas))
+                    (increase (tick) (timeToBuild barrancon))
+
                 )
             )
 
             (when (buildingType ?building extractor) 
-                (decrease (resourceCount mineral) (toBuildNeedsNum extractor mineral))
+                (and
+                    (decrease (resourceCount mineral) (toBuildNeedsNum extractor mineral))
+                    (increase (tick) (timeToBuild extractor))
+                )
             )
         )
     )
 
     (:action reclutar
+        ; Si existe el edificio necesario y los recursos, reclutar una unidad.
         :parameters (?building - building ?unit - unit ?x - map)
         :precondition 
         (and 
@@ -241,15 +277,21 @@
             (in ?unit ?x)
             (isHired ?unit)
 
-            ; Se reduce la cantidad de recursos dependiendo del tipo de unidad que se ha reclutado.
+            ; Se reduce la cantidad de recursos dependiendo del tipo de unidad que se ha reclutado
+            ; y se aumenta el tiempo dependiendo de que unidad se ha reclutado.
             (when (unitType ?unit VCE) 
-                (decrease (resourceCount mineral) (toHireNeedsNum VCE mineral))
+                (and
+                    (decrease (resourceCount mineral) (toHireNeedsNum VCE mineral))
+                    (increase (tick) (timeToHire VCE))
+                )
+                
             )
 
             (when (unitType ?unit marine)
                 (and
                     (decrease (resourceCount mineral) (toHireNeedsNum marine mineral))
                     (decrease (resourceCount gas) (toHireNeedsNum marine gas))
+                    (increase (tick) (timeToHire marine))
                 )
             )
 
@@ -257,12 +299,14 @@
                 (and
                     (decrease (resourceCount mineral) (toHireNeedsNum segador mineral))
                     (decrease (resourceCount gas) (toHireNeedsNum segador gas))
+                    (increase (tick) (timeToHire segador))
                 )
-            )
+            )         
         )
     )
 
     (:action recolectar
+        ; Se recolecta el recurso del nodo de recurso en el que se encuentra un VCE.
         :parameters (?resource - resource ?x - map)
         :precondition 
         (and 
@@ -284,6 +328,9 @@
         (and 
             ; Se incrementa la cantidad del recurso dependiendo de cuántos VCEs están asignados al nodo.
             (increase (resourceCount ?resource) (* 10 (VCEcount ?resource ?x)))
+
+            ; Se incrementa el tiempo transcurrido.
+            (increase (tick) (timeToExtract))
         )
     )
     

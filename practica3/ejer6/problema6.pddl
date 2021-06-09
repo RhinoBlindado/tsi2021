@@ -15,7 +15,7 @@
 (define (problem ej6p)
     (:domain terran6)
     (:objects
-        ; Se instancias los objetos necesarios.
+        ; Se instancian los objetos necesarios.
         LOC11 LOC12 LOC13 LOC14 LOC21 LOC22 LOC23 LOC24 LOC31 LOC32 LOC33 LOC34 - map
         VCE1 VCE2 VCE3 marine1 marine2 segador1 - unit
         centro-de-mando1 extractor1 barrancon1 - building

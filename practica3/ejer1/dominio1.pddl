@@ -24,7 +24,7 @@
         mineral gas - resource
     )
     (:predicates
-        ; Atributos
+        ; Atributos: Dadas las restricciones de las acciones, se utilizan estos predicados como atributos de los objetos.
         ; - Tipo de unidad.
         (unitType ?unit - unit ?type - uType)
         ; - Tipo de edificio.
@@ -47,12 +47,15 @@
         :parameters (?unit - unit ?x ?y - map)
         :precondition 
         (and 
+            ; Si están conectadas dos localizaciones.
             (connected ?x ?y)
+            ; Y la unidad está en una de ellas.
             (in ?unit ?x)
 
         )
         :effect 
         (and 
+            ; Puede moverse a la otra.
             (in ?unit ?y)
             (not (in ?unit ?x))
         )
@@ -62,12 +65,16 @@
         :parameters (?unit - unit ?resourceLocation - map ?resourceType - resource)
         :precondition 
         (and 
+            ; Si la unidad es un VCE
             (unitType ?unit VCE)
+            ; Y se encuentra en una localización
             (in ?unit ?resourceLocation)
+            ; Que es la localización de un nodo de recursos.
             (resourceNode ?resourceLocation ?resourceType)
         )
         :effect 
         (and 
+            ; Empezar a extraerlo.
             (isExtracting ?unit ?resourceType)
         )
     )

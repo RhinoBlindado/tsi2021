@@ -24,8 +24,7 @@
         mineral gas - resource
     )
     (:predicates
-        ; Atributos
-        
+        ; Atributos: Dadas las restricciones de las acciones, se utilizan estos predicados como atributos de los objetos.
         ; - Tipo de unidad.
         (unitType ?unit - unit ?type - uType)
         ; - Tipo de edificio.
@@ -64,8 +63,7 @@
         (isHired ?unit - unit)
         ;       - Indica que en un cierto edificio se recluta una unidad particular.
         (hiredIn ?unitType - uType ?buildingType - bType)
-        ;       - Indica que necesita una investigación para poderse recludar.
-        (needsResearch ?unitType - uType ?research - research)
+        
 
         ;   + Predicados de Investigaciones
         ;       - Indica que una investigación necesita recursos
@@ -80,12 +78,15 @@
         :parameters (?unit - unit ?x ?y - map)
         :precondition 
         (and 
+            ; Si están conectadas dos localizaciones.
             (connected ?x ?y)
+            ; Y la unidad está en una de ellas.
             (in ?unit ?x)
 
         )
         :effect 
         (and 
+            ; Puede moverse a la otra.
             (in ?unit ?y)
             (not (in ?unit ?x))
         )
@@ -133,6 +134,7 @@
     )
 
     (:action construir
+        ; Si la localización lo permite, se puede construir un edificio siempre y cuando se esté extrayendo el recurso necesario.
         :parameters (?unit - unit ?building - building ?x - map)
         :precondition 
         (and 
@@ -176,6 +178,7 @@
     )
 
     (:action reclutar
+        ; Si existe el edificio necesario y los recursos, reclutar una unidad.
         :parameters (?building - building ?unit - unit ?x - map)
         :precondition 
         (and 
@@ -218,10 +221,10 @@
     )
 
     (:action investigar
+        ; Realizar investigaciones en la Bahía de Ingeniería si se tienen disponibles los recursos.
         :parameters (?building - building ?research - research)
         :precondition 
         (and 
-    
             ; El edificio está construido.
             (built ?building)
             ; El edificio es la bahía de ingeniería.

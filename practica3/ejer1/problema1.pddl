@@ -15,7 +15,7 @@
 (define (problem ej1p)
     (:domain terran1)
     (:objects
-        ; Se instancias los objetos que se piden.
+        ; Se instancian los objetos necesarios.
         LOC11 LOC12 LOC13 LOC14 LOC21 LOC22 LOC23 LOC24 LOC31 LOC32 LOC33 LOC34 - map
         VCE1 - unit
         centro-de-mando1 - building

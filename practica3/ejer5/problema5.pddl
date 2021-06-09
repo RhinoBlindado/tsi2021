@@ -15,7 +15,7 @@
 (define (problem ej5p)
     (:domain terran5)
     (:objects
-        ; Se instancias los objetos que se piden.
+        ; Se instancian los objetos necesarios.
         LOC11 LOC12 LOC13 LOC14 LOC21 LOC22 LOC23 LOC24 LOC31 LOC32 LOC33 LOC34 - map
         VCE1 VCE2 VCE3 marine1 marine2 segador1 - unit
         centro-de-mando1 extractor1 barrancon1 bahia-de-ingenieria1 - building
@@ -99,8 +99,6 @@
         (toHireNeeds segador gas)
         ; - Indicando que los Segadores se reclutan en los Barrancones.
         (hiredIn segador barrancon)
-        ; - Los segadores necesitan de la investigación "Impulsar Segador" para ser reclutados
-        (needsResearch segador impulsar-segador)
 
         ; Centro de Mando
         ; - Indicando que el Centro de Mando es de tipo Centro de Mando.
